@@ -7,7 +7,7 @@ email = input("What is your email?, ").strip()
 #Invalid if not 
 
 #in checks all within 
-if "@" in email: 
+if "@" in email and "." in email and "edu" in email: 
 ....print("Valid")
 else:
 ....print("Invalid")
