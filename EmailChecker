@@ -1,0 +1,14 @@
+email = input("What is your email?, ").strip()
+
+#Strip removes any whitespace fromt the User 
+#Input prompts user 
+
+#Checking for @ sign with valid 
+#Invalid if not 
+
+#in checks all within 
+if "@" in email: 
+....print("Valid")
+else:
+....print("Invalid")
+
