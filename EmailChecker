@@ -5,10 +5,10 @@ email = input("What is your email?, ").strip()
 
 #Checking for @ sign with valid 
 #Invalid if not 
+#returning two parts split at username and domain 
+username, domain = email.split("@")
 
-#in checks all within 
-if "@" in email and "." in email and "edu" in email: 
+if username and ".edu" in domain: 
 ....print("Valid")
-else:
+else: 
 ....print("Invalid")
-
