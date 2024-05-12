@@ -1,0 +1,44 @@
+#26: Remove Duplicated from Sorted Array 
+
+"""
+26. Remove Duplicates from Sorted Array
+Easy
+Topics
+Companies
+Hint
+Given an integer array nums sorted in non-decreasing order, remove the duplicates in-place such that each unique element appears only once. The relative order of the elements should be kept the same. Then return the number of unique elements in nums.
+
+Consider the number of unique elements of nums to be k, to get accepted, you need to do the following things:
+
+Change the array nums such that the first k elements of nums contain the unique elements in the order they were present in nums initially. The remaining elements of nums are not important as well as the size of nums.
+Return k.
+
+"""
+
+
+#solution 
+#optimizing for time and space complexity 
+#python 
+
+class Solution(object):
+  def removeDuplicates(self, nums):
+      """
+      :type nums: List[int]
+      :rtype: int
+      i, j = 0,1
+      n = len(nums) 
+      while j<n:
+        if nums[j] == nums[i]
+           j += 1
+        else: 
+           nums[i+1] = nums[j] 
+
+           i += 1 
+           j += 1 
+      return i + 1
+
+#Time complexity O(n) 
+#Space Complexity: Depends on number of changes that happen in array (i+1) I beleive. 
+
+
+
