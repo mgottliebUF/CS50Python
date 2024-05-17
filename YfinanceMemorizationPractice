@@ -1,0 +1,41 @@
+import yfinance as yf
+import pandas as pd
+
+tech = ["AAPL", "MSFT", "AMZN", "META", "GOOGL"]
+defense = ["LMT", "RTX", "NG", "GE"]
+
+def fetch_monthly_data(tickers):
+    monthly_data = {}
+    for ticker in tickers:
+        stock = yf.Ticker(ticker)
+        history = stock.history(period ="3y", interval = "1mo")
+        monthly_data[ticker] = history['Close']
+    return monthly_data
+
+def calculate_monthly_changes(data):
+    monthly_changes = {}
+    for ticker, prices in data.items():
+        monthly_changes[ticker] = prices.pct_change().dropna() * 100
+    return monthly_changes
+
+tech_data = fetch_monthly_data(tech)
+defense_data = fetch_monthly_data(defense)
+
+tech_changes = calculate_monthly_changes(tech_data)
+defense_changes = calculate_monthly_changes(defense_data)
+
+print("Tech monthly changes price (%): ")
+for ticker, changes in tech_changes.items():
+    print(f"{ticker}:")
+    print(changes)
+
+print("Defense monthly changes price (%): ")
+for ticker, changes in defense_changes.items():
+    print(f"{ticker}:")
+    print(changes)
+
+
+
+
+
+
