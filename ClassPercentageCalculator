@@ -1,9 +1,13 @@
-#Semester 2 Class Progress Calculator using memorization 
+#Semester 2 Class Progress Calculator using memorization
 
 Ethics_Class = float(input("What is your percentage completed in Ethics Class?: "))
+Ethics_Classgrade = float(input("What is your grade?: "))
 ML_Class = float(input("What is your percentage completed in Machine Learning,Supervised Class?: "))
+ML_Classgrade = float(input("What is your grade?: "))
 DL_Class = float(input("What is your percentage completed in Deep Learning Class?: "))
+DL_Classgrade = float(input("What is your grade?: "))
 Greedy_Class = float(input("What is your percentage completed in DP, Greedy Algo Class?: "))
+Greedy_Classgrade = float(input("What is your grade?: "))
 
-Total_Percentage = ((Ethics_Class + ML_Class + DL_Class + Greedy_Class) / 400)
+Total_Percentage = (((Ethics_Class*Ethics_Classgrade) + (ML_Class*ML_Classgrade) + (DL_Class*DL_Classgrade) + (Greedy_Class*Greedy_Classgrade))/40000)
 print("You are", Total_Percentage*100,"% done with this semester")
