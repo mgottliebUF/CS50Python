@@ -1,0 +1,173 @@
+import pygame
+import random
+import time
+import heapq
+
+# Maze dimensions
+WIDTH = 20
+HEIGHT = 20
+CELL_SIZE = 25
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GREEN = (0, 255, 0)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GRAY = (200, 200, 200)
+YELLOW = (255, 255, 0)
+
+# Initialize pygame
+pygame.init()
+screen = pygame.display.set_mode((WIDTH * CELL_SIZE, HEIGHT * CELL_SIZE + 40))
+pygame.display.set_caption("Maze Generator and Solver")
+clock = pygame.time.Clock()
+
+def draw_grid():
+    for x in range(0, WIDTH * CELL_SIZE, CELL_SIZE):
+        for y in range(0, HEIGHT * CELL_SIZE, CELL_SIZE):
+            rect = pygame.Rect(x, y, CELL_SIZE, CELL_SIZE)
+            pygame.draw.rect(screen, GRAY, rect, 1)
+
+def create_maze():
+    maze = [[1 for _ in range(WIDTH)] for _ in range(HEIGHT)]
+    start = (0, 0)
+    stack = [start]
+    visited = set([start])
+
+    while stack:
+        current = stack[-1]
+        x, y = current
+        maze[y][x] = 0
+        neighbors = []
+
+        for dx, dy in [(-2, 0), (2, 0), (0, -2), (0, 2)]:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < WIDTH and 0 <= ny < HEIGHT and (nx, ny) not in visited:
+                neighbors.append((nx, ny))
+
+        if neighbors:
+            next_cell = random.choice(neighbors)
+            nx, ny = next_cell
+            maze[(y + ny) // 2][(x + nx) // 2] = 0
+            visited.add(next_cell)
+            stack.append(next_cell)
+        else:
+            stack.pop()
+
+    return maze
+
+def draw_maze(maze):
+    for y in range(HEIGHT):
+        for x in range(WIDTH):
+            if maze[y][x] == 1:
+                rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+                pygame.draw.rect(screen, BLACK, rect)
+
+def heuristic(a, b):
+    return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+def a_star(maze, start, end):
+    open_set = []
+    heapq.heappush(open_set, (0, start))
+    came_from = {}
+    g_score = {start: 0}
+    f_score = {start: heuristic(start, end)}
+    visited = set()
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+
+        if current in visited:
+            continue
+
+        visited.add(current)
+
+        # Visualize current step
+        x, y = current
+        rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(screen, YELLOW, rect)
+        pygame.display.update()
+        clock.tick(20)
+
+        if current == end:
+            path = []
+            while current in came_from:
+                path.append(current)
+                current = came_from[current]
+            path.append(start)
+            path.reverse()
+            return path
+
+        for dx, dy in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+            neighbor = (x + dx, y + dy)
+            nx, ny = neighbor
+
+            if 0 <= nx < WIDTH and 0 <= ny < HEIGHT and maze[ny][nx] == 0:
+                tentative_g_score = g_score[current] + 1
+
+                if neighbor not in g_score or tentative_g_score < g_score[neighbor]:
+                    came_from[neighbor] = current
+                    g_score[neighbor] = tentative_g_score
+                    f_score[neighbor] = tentative_g_score + heuristic(neighbor, end)
+                    heapq.heappush(open_set, (f_score[neighbor], neighbor))
+
+    return []
+
+def draw_path(path):
+    for (x, y) in path:
+        rect = pygame.Rect(x * CELL_SIZE, y * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(screen, BLUE, rect)
+        pygame.display.update()
+        clock.tick(10)  # Control the speed of the visualization
+
+def main():
+    maze = create_maze()
+    start = (0, 0)
+    end = (WIDTH - 2, HEIGHT - 2)  # Make sure the end point is inside the maze and reachable
+
+    # Clear a path from start to end to ensure solvability
+    path_x, path_y = start
+    while path_x < end[0]:
+        maze[path_y][path_x + 1] = 0
+        path_x += 1
+    while path_y < end[1]:
+        maze[path_y + 1][path_x] = 0
+        path_y += 1
+
+    start_time = time.time()
+    path = a_star(maze, start, end)
+    end_time = time.time()
+
+    running = True
+    while running:
+        screen.fill(WHITE)
+        draw_grid()
+        draw_maze(maze)
+
+        # Draw the start and end points
+        start_rect = pygame.Rect(start[0] * CELL_SIZE, start[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        end_rect = pygame.Rect(end[0] * CELL_SIZE, end[1] * CELL_SIZE, CELL_SIZE, CELL_SIZE)
+        pygame.draw.rect(screen, GREEN, start_rect)
+        pygame.draw.rect(screen, RED, end_rect)
+
+
+        if path:
+            draw_path(path)
+            time_taken = end_time - start_time
+            moves = len(path)
+            font = pygame.font.SysFont(None, 24)
+            # screen.blit(text, (10, HEIGHT * CELL_SIZE + 10))
+        print(f'Maze solved in {time_taken:.3f} seconds and {moves} moves')
+
+        pygame.display.flip()
+        clock.tick(60)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    main()
